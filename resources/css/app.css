@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ヘッダー全体をスタイリング */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa; /* 背景色を設定 */
+    padding: 10px 20px; /* 上下のパディングと左右のパディング */
+}
+
+/* ロゴのスタイリング */
+.logo img {
+    height: 50px; /* ロゴのサイズを設定 */
+    width: auto; /* 幅を自動調整 */
+}
+
+/* ナビゲーションバーのスタイリング */
+nav ul {
+    list-style: none; /* リストのスタイルをなくす */
+    display: flex; /* 要素を横並びにする */
+    padding: 0; /* パディングをリセット */
+    margin: 0; /* マージンをリセット */
+}
+
+nav ul li {
+    margin-left: 20px; /* リスト項目間のマージンを設定 */
+}
+
+nav ul li a {
+    text-decoration: none; /* リンクの下線をなくす */
+    color: #333; /* リンクの色を設定 */
+    font-weight: bold; /* フォントを太くする */
+}
+
+/* レスポンシブデザインの場合の考慮 */
+@media (max-width: 600px) {
+    nav ul {
+        flex-direction: column; /* スクリーンサイズが小さい場合は縦並びに変更 */
+        align-items: center; /* 中央揃えにする */
+    }
+    nav ul li {
+        margin: 5px 0; /* 縦並びのときのマージン */
+    }
+}

@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* public/css/app.css */
+
+/* ヘッダーのスタイル */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ロゴのスタイル */
+.logo img {
+    height: 50px; /* 適切なサイズに調整してください */
+}
+
+/* ナビゲーションのスタイル */
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px; /* 適切な間隔に調整してください */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: black;
+}
+
