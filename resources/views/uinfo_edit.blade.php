@@ -1,5 +1,3 @@
-<!-- uinfo_edit.blade.php -->
-
 @extends('layouts.app') <!-- 既存のレイアウトを継承する場合 -->
 
 @section('slot')

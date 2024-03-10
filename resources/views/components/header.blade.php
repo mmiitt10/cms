@@ -4,7 +4,7 @@
         <header>
             <div class="logo">
                 <a href="/">
-                    <img src="{{ asset('images/inputlink_logo2.png') }}" alt="Inputlink Logo">
+                    <img src="/images/inputlink_logo2.png" alt="Inputlink Logo">
                 </a>
             </div>
     
@@ -12,18 +12,18 @@
                 <ul>
                     <!-- ログインしていない場合の表示項目 -->
                     @guest
-                        <li><a href="timeLine">タイムライン</a></li>
-                        <li><a href="find">探す</a></li>
-                        <li><a href="conRegister">登録する</a></li>
-                        <li><a href="management">マネジメント</a></li>
+                        <li><a href="{{route('timeline')}}">タイムライン</a></li>
+                        <li><a href="{{route('book.search')}}">探す</a></li>
+                        <li><a href="">登録する</a></li>
+                        <li><a href="{{route('bookshelf')}}">本棚</a></li>
                         <li><a href="{{route('login')}}">ログイン</a></li>
                         <li><a href="{{route('register')}}">会員登録</a></li>
                     <!-- ログインしている場合の表示項目 -->
                     @else
-                        <li><a href="timeLine">タイムライン</a></li>
-                        <li><a href="find">探す</a></li>
+                        <li><a href="{{route('timeline')}}">タイムライン</a></li>
+                        <li><a href="{{route('book.search')}}">探す</a></li>
                         <li><a href="register">登録する</a></li>
-                        <li><a href="management">マネジメント</a></li>
+                        <li><a href="{{route('bookshelf')}}">本棚</a></li>
                         <!--ログアウト機能-->
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
@@ -36,11 +36,11 @@
                             </form>
                         </li>
                         <!-- ログインユーザーのアイコン表示 -->
-                        <li><a href="mypage">
+                        <li class="icon"><a href="{{route('mypage')}}">
                             @if(auth()->user()->uinfo && auth()->user()->uinfo->profile_picture)
-                                <img src="{{ asset('storage/'.auth()->user()->uinfo->profile_picture) }}" alt="User Icon" style="height: 50px;">
+                                <img src="{{ asset('storage/'.auth()->user()->uinfo->profile_picture) }}" alt="User Icon">
                             @else
-                                <img src="{{ asset('path/to/default-user-icon.png') }}" alt="User Icon" style="height: 50px;">
+                                <img src="/images/no_login_user.png" alt="User Icon">
                             @endif
                         </a></li>
                     @endguest

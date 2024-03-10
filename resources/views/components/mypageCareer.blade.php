@@ -1,12 +1,12 @@
 <html>
     <div class="card-body">
         @foreach(auth()->user()->career as $career)
-            <p>Company: {{ $career->career_company }}</p>
-            <p>Joined: {{ $career->career_work_from }}</p>
-            <p>Left: {{ $career->career_work_to }}</p>
-            <p>Career Industry: {{ $career->career_industry }}</p>
-            <p>Career Function: {{ $career->career_function }}</p>
-            <p>Position: {{ $career->career_position }}</p>
+            <p>企業: {{ $career->career_company }}</p>
+            <p>入社時期: {{ $career->career_work_from }}</p>
+            <p>退社時期: {{ $career->career_work_to }}</p>
+            <p>業界: {{ $career->career_industry }}</p>
+            <p>職種: {{ $career->career_function }}</p>
+            <p>役職: {{ $career->career_position }}</p>
             <a href="{{ route('career.edit', ['career' => $career->id]) }}" class="edit-button">編集</a>
             <form action="{{ route('career.delete', ['career' => $career->id]) }}" method="POST" style="display: inline;">
                 @csrf

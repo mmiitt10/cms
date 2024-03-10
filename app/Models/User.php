@@ -60,4 +60,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Career::class, 'user_id');
     }
+    
+    
+    // ユーザーに紐づく書籍情報を取得
+    public function book()
+    {
+        return $this->hasMany(Book::class, 'user_id');
+    }
 }

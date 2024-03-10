@@ -4,11 +4,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UinfoController;
 use App\Http\Controllers\InterestController;
 use App\Http\Controllers\CareerController;
+use App\Http\Controllers\BookController;
 
 // モデル
 use App\Models\Uinfo;
 use App\Models\Interest;
 use App\Models\Career;
+use App\Models\Book;
 
 // ファサード
 use Illuminate\Support\Facades\Route;
@@ -46,54 +48,90 @@ Route::get('/mypage',function(){
 }) ->name('mypage');
 
 // ユーザー情報
-// ユーザー情報登録フォームを表示
-Route::get('/uinfo/create', function () {
-    return view('uinfo_register');
-})->name('uinfo.create');
-
-// ユーザー情報登録
-Route::post('/uinfo',[UinfoController::class,'store'])->name('uinfo.store');
-
-// ユーザー情報編集フォームを表示
-Route::get('/uinfo/edit/{uinfo}', [UinfoController::class, 'edit'])->name('uinfo.edit');
-
-// ユーザー情報編集
-Route::put('/uinfo/update/{uinfo}',[UinfoController::class,"update"])->name('uinfo.update');
+    // ユーザー情報登録フォームを表示
+    Route::get('/uinfo/create', function () {
+        return view('uinfo_register');
+    })->name('uinfo.create');
+    
+    // ユーザー情報登録
+    Route::post('/uinfo',[UinfoController::class,'store'])->name('uinfo.store');
+    
+    // ユーザー情報編集フォームを表示
+    Route::get('/uinfo/edit/{uinfo}', [UinfoController::class, 'edit'])->name('uinfo.edit');
+    
+    // ユーザー情報編集
+    Route::put('/uinfo/update/{uinfo}',[UinfoController::class,"update"])->name('uinfo.update');
 
 
 // 関心情報
-// 関心情報入力フォームを表示
-Route::get('/interest/create', function () {
-    return view('interest_register');
-})->name('interest.create');
-
-// 関心情報登録
-Route::post('/interest',[InterestController::class,'store'])->name('interest.store');
-
-// ユーザー情報編集フォームを表示
-Route::get('/interest/edit/{interest}', [InterestController::class, 'edit'])->name('interest.edit');
-
-// ユーザー情報編集
-Route::put('/interest/update/{interest}',[InterestController::class,"update"])->name('interest.update');
+    // 関心情報入力フォームを表示
+    Route::get('/interest/create', function () {
+        return view('interest_register');
+    })->name('interest.create');
+    
+    // 関心情報登録
+    Route::post('/interest',[InterestController::class,'store'])->name('interest.store');
+    
+    // ユーザー情報編集フォームを表示
+    Route::get('/interest/edit/{interest}', [InterestController::class, 'edit'])->name('interest.edit');
+    
+    // ユーザー情報編集
+    Route::put('/interest/update/{interest}',[InterestController::class,"update"])->name('interest.update');
 
 // キャリア情報
-// 登録フォーム表示
-Route::get('/career/create', function () {
-    return view('career_register');
-})->name('career.create');
+    // 登録フォーム表示
+    Route::get('/career/create', function () {
+        return view('career_register');
+    })->name('career.create');
+    
+    // 情報登録
+    Route::post('/career',[CareerController::class,'store'])->name('career.store');
+    
+    // 更新フォーム表示
+    Route::get('/career/edit/{career}', [CareerController::class, 'edit'])->name('career.edit');
+    
+    // 更新
+    Route::put('/career/update/{career}',[CareerController::class,"update"])->name('career.update');
+    
+    //削除 
+    Route::delete('/career/{career}', [CareerController::class,"destroy"])->name('career.delete');
 
-// 情報登録
-Route::post('/career',[CareerController::class,'store'])->name('career.store');
+// 書籍情報登録
+    // 書籍情報登録フォームを表示
+    Route::get('/book/search', function () {
+        return view('book_search');
+    })->name('book.search');
+    
+    // 書籍情報検索結果を取得
+    Route::get('/book/search/result', [BookController::class, 'searchBooks'])->name('book.search.result');
+    
+    // isbn取得
+    Route::get('/book/{isbn}', [BookController::class,'showByISBN'])->name('book.register');
+    
+    // 情報登録
+    Route::post('/book',[BookController::class,'store'])->name('book.store');
+    
+    // 更新フォーム表示
+    Route::get('/book/edit/{book}', [BookController::class, 'edit'])->name('book.edit');
+    
+    // 更新
+    Route::put('/book/update/{book}',[BookController::class,"update"])->name('book.update');
+    
+    //削除 
+    Route::delete('/book/{book}', [BookController::class,"destroy"])->name('book.delete');
 
-// 更新フォーム表示
-Route::get('/career/edit/{career}', [CareerController::class, 'edit'])->name('career.edit');
+// 本棚機能
+    // 本棚表示
+    Route::get('/bookshelf', function () {
+        return view('bookshelf');
+    })->name('bookshelf');
 
-// 更新
-Route::put('/career/update/{career}',[CareerController::class,"update"])->name('career.update');
 
-//削除 
-Route::delete('/career/{career}', [CareerController::class,"destroy"])->name('career.delete');
-
+// タイムライン
+    // タイムライン表示
+    Route::get('/timeline', function () {
+        return view('timeline');
+    })->name('timeline');
 
 // そのほか
 Route::get('/dashboard', function () {

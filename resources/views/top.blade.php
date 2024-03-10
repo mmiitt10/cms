@@ -2,7 +2,7 @@
 
 @section('slot')
     {{-- メインコンテンツ部分 --}}
-        <div class="container">
-            <h1>トップページ123</h1>
-        </div>
+    <div class="container">
+        <h1>トップページ123</h1>
+    </div>
 @endsection
