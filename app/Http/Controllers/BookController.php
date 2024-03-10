@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -127,6 +128,9 @@ class BookController extends Controller
     
         // レスポンスをデコード
         $bookData = json_decode($response);
+        
+        // データベースからISBNに一致するすべての書籍を検索
+        $dbBooks = Book::where('ssbid', $isbn)->get();
     
         // 書籍情報が存在するか確認
         if (isset($bookData->items) && !empty($bookData->items)) {
@@ -142,7 +146,7 @@ class BookController extends Controller
         }
     
         // ビューに書籍情報を渡す
-        return view('book_register', compact('isbn', 'title', 'authors', 'thumbnail', 'description', 'publishedDate'));
+        return view('book_register', compact('isbn', 'title', 'authors', 'thumbnail', 'description', 'publishedDate','dbBooks'));
     }
 
     
@@ -176,6 +180,78 @@ class BookController extends Controller
         // リダイレクトまたはレスポンスを返す
         return redirect('/bookshelf');
     }
+    
+    
+    public function showBookshelf()
+    {
+        
+        // 現在ログインしているユーザーのIDを取得
+        $userId = auth()->id();
+    
+        // 現在のユーザーが登録した書籍情報のみを取得
+        $books = Book::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
+        
+        $client = new Client();
+        foreach ($books as $book) {
+            // ISBN に基づいてキャッシュキーを生成
+            $cacheKey = 'book_info_' . $book->ssbid;
+    
+            // キャッシュから書籍情報を取得しようと試みる
+            $bookInfo = Cache::remember($cacheKey, 60*24, function () use ($client, $book) {
+                // キャッシュにデータがない場合は、API を叩いてデータを取得
+                $response = $client->request('GET', 'https://www.googleapis.com/books/v1/volumes', [
+                    'query' => ['q' => 'isbn:' . $book->ssbid]
+                ]);
+    
+                if ($response->getStatusCode() == 200) {
+                    $data = json_decode($response->getBody()->getContents(), true);
+                    return $data['items'][0] ?? null;
+                }
+    
+                return null; // APIからのレスポンスが異常な場合
+            });
+    
+            // 取得した情報を書籍オブジェクトに追加
+            $book->googleBookInfo = $bookInfo;
+        }
+
+        return view('bookshelf', ['books' => $books]);
+    }
+    
+    public function showUserBookshelf($id)
+    {
+        // クリックしたユーザーの情報を取得
+        $user = User::findOrFail($id);
+    
+        // クリックしたユーザーが登録した書籍情報のみを取得
+        $books = Book::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();        
+        
+        $client = new Client();
+        foreach ($books as $book) {
+            // ISBN に基づいてキャッシュキーを生成
+            $cacheKey = 'book_info_' . $book->ssbid;
+    
+            // キャッシュから書籍情報を取得しようと試みる
+            $bookInfo = Cache::remember($cacheKey, 60*24, function () use ($client, $book) {
+                // キャッシュにデータがない場合は、API を叩いてデータを取得
+                $response = $client->request('GET', 'https://www.googleapis.com/books/v1/volumes', [
+                    'query' => ['q' => 'isbn:' . $book->ssbid]
+                ]);
+    
+                if ($response->getStatusCode() == 200) {
+                    $data = json_decode($response->getBody()->getContents(), true);
+                    return $data['items'][0] ?? null;
+                }
+    
+                return null; // APIからのレスポンスが異常な場合
+            });
+    
+            // 取得した情報を書籍オブジェクトに追加
+            $book->googleBookInfo = $bookInfo;
+        }
+
+        return view('mypage_watch', ['user'=>$user,'books' => $books]);
+    }
 
     /**
      * Display the specified resource.
@@ -188,57 +264,90 @@ class BookController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Book $book)
+    public function edit($id)
     {
-        //
+        // IDによって書籍を見つける、見つからなければ404エラー
+        $book = Book::findOrFail($id); 
+        
+        // 格納しているisbnを抽出
+        $isbn = $book->ssbid;
+        
+        // APIのURLを作成
+        $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
+    
+        // APIからのレスポンスを取得
+        $response = @file_get_contents($url); // エラーを抑制
+    
+        // レスポンスの確認
+        if ($response === false) {
+            // APIリクエストに失敗した場合
+            return redirect()->back()->withErrors(['msg' => '書籍情報の取得に失敗しました。']);
+        }
+    
+        // レスポンスをデコード
+        $bookData = json_decode($response);
+        
+        // データベースからISBNに一致するすべての書籍を検索
+        $dbBooks = Book::where('ssbid', $isbn)->get();
+    
+        // 書籍情報が存在するか確認
+        if (isset($bookData->items) && !empty($bookData->items)) {
+            $volumeInfo = $bookData->items[0]->volumeInfo;
+            $title = $volumeInfo->title ?? 'タイトル不明';
+            $authors = $volumeInfo->authors ?? ['著者不明'];
+            $thumbnail = $volumeInfo->imageLinks->thumbnail ?? 'no_image.png';
+            $description = $volumeInfo->description ?? '概要がありません。';
+            $publishedDate = $volumeInfo->publishedDate ?? '出版日がありません。';
+        } else {
+            // 該当する書籍が見つからない場合
+            return redirect()->back()->withErrors(['msg' => '該当する書籍が見つかりませんでした。']);
+        }
+        
+        // ビューに書籍情報を渡す
+        return view('book_edit', compact('book','isbn', 'title', 'authors', 'thumbnail', 'description', 'publishedDate','dbBooks'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Book $book)
+    public function update(Request $request, $id)
     {
-        //
+        // バリデーションルールの定義
+        $validator = Validator::make($request->all(), [
+            'ssbid' => 'required|string|max:255',
+            'status' => 'required|string|max:255',
+            'assessment' => 'required|integer|min:0|max:5',
+            'comment' => 'nullable|string',
+        ]);
+    
+        // バリデーションエラーを設定
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+    
+        // 指定されたIDで書籍情報を見つける、見つからなければ404エラーを返す
+        $book = Book::findOrFail($id);
+    
+        // リクエストデータで書籍情報を更新
+        $book->ssbid = $request->ssbid;
+        $book->status = $request->status;
+        $book->assessment = $request->assessment;
+        $book->comment = $request->comment;
+        $book->save(); // 更新された書籍情報を保存
+    
+        // 書籍情報の更新後、ユーザーをbookshelfページにリダイレクト
+        return redirect('/bookshelf')->with('success', '書籍情報が更新されました！');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Book $book)
+    public function destroy($id)
     {
-        //
+        $book = Book::findOrFail($id); // IDに基づいて書籍を見つける
+        $book->delete(); // 書籍を削除
+        return redirect('/bookshelf')->with('success', '書籍が削除されました！');
     }
     
-    // 書籍のisbn情報をもとにtimelineに情報を渡す
-    public function isbnToTimeline($isbn)
-    {
-        // books DBに登録しているisbnを抜き出す
-        
-        
-        // APIのURLを作成
-        $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
-
-
-        // APIからのレスポンスを取得
-        $response = file_get_contents($url);
-        
-        // レスポンスをデコード
-        $bookData = json_decode($response);
-        
-        if (isset($bookData->items[0]->volumeInfo)) {
-            $volumeInfo = $bookData->items[0]->volumeInfo;
-            $title = $volumeInfo->title ?? '';
-            $authors = $volumeInfo->authors ?? '著者不明';
-            $thumbnail = $volumeInfo->imageLinks->thumbnail ?? 'no_image.png';
-            $description = $volumeInfo->description ?? '概要がありません。';
-            $publishedDate = $volumeInfo->publishedDate ?? '出版日がありません。';
-        } else {
-            // エラーハンドリング
-            return view('book_search');
-        }
-
-        // ビューに書籍情報を渡す
-        return view('book_register',compact('isbn','title', 'authors', 'thumbnail', 'description', 'publishedDate'));
-    }
     
 }

@@ -8,7 +8,16 @@
                 <div class="uinfo">
                     
                     <!--画像-->        
-                    <img src="{{ asset('storage/'.$book->user->uinfo->profile_picture) }}" alt="Profile Picture">
+                    <!--<img src="{{ asset('storage/'.$book->user->uinfo->profile_picture) }}" alt="Profile Picture">-->
+                    @if (auth()->check() && $book->user_id == auth()->user()->id)
+                        <a href="{{ route('mypage') }}">
+                            <img src="{{ asset('storage/'.$book->user->uinfo->profile_picture) }}" alt="Profile Picture">
+                        </a>
+                    @else
+                        <a href="{{ route('user.page', ['id' => $book->user_id]) }}">
+                            <img src="{{ asset('storage/'.$book->user->uinfo->profile_picture) }}" alt="Profile Picture">
+                        </a>
+                    @endif
                     
                     <!--名前-->
                     <div class="name"> {{ $book->user->uinfo->profile_name }}</div>

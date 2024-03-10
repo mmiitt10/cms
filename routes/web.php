@@ -7,6 +7,7 @@ use App\Http\Controllers\CareerController;
 use App\Http\Controllers\BookController;
 
 // モデル
+use App\Models\User;
 use App\Models\Uinfo;
 use App\Models\Interest;
 use App\Models\Career;
@@ -43,9 +44,13 @@ Route::get('/register',function(){
 }) ->name('register');
 
 // マイページ
-Route::get('/mypage',function(){
-    return view('mypage');
-}) ->name('mypage');
+    // 自分のマイページ
+    Route::get('/mypage',function(){
+        return view('mypage');
+    }) ->name('mypage');
+    
+    // 他人のマイページ
+    Route::get('/user/{id}/mypage', [BookController::class,'showUserBookshelf'])->name('user.page');
 
 // ユーザー情報
     // ユーザー情報登録フォームを表示
@@ -112,22 +117,20 @@ Route::get('/mypage',function(){
     Route::post('/book',[BookController::class,'store'])->name('book.store');
     
     // 更新フォーム表示
-    Route::get('/book/edit/{book}', [BookController::class, 'edit'])->name('book.edit');
+    Route::get('/book/{id}/edit', [BookController::class, 'edit'])->name('book.edit');
     
     // 更新
-    Route::put('/book/update/{book}',[BookController::class,"update"])->name('book.update');
+    Route::put('/book/{id}/update',[BookController::class,"update"])->name('book.update');
     
     //削除 
-    Route::delete('/book/{book}', [BookController::class,"destroy"])->name('book.delete');
+    Route::delete('/book/{id}', [BookController::class,"destroy"])->name('book.delete');
     
     // タイムライン表示
     Route::get('/timeline', [BookController::class,"index" ])->name('timeline');
 
 // 本棚機能
     // 本棚表示
-    Route::get('/bookshelf', function () {
-        return view('bookshelf');
-    })->name('bookshelf');
+    Route::get('/bookshelf', [BookController::class,"showBookshelf" ])->name('bookshelf');
 
 // そのほか
 Route::get('/dashboard', function () {
