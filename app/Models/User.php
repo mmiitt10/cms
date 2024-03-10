@@ -58,7 +58,7 @@ class User extends Authenticatable
     // ユーザーに紐づくキャリアを取得
     public function career()
     {
-        return $this->hasMany(Career::class, 'user_id');
+        return $this->hasMany(Career::class, 'user_id')->orderBy('career_work_from','desc');
     }
     
     

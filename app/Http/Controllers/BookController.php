@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 
+// デバッグ確認
+use Illuminate\Support\Facades\Log;
+
+
 class BookController extends Controller
 {
     /**
@@ -20,6 +24,7 @@ class BookController extends Controller
     {
         $client = new Client();
         $books = Book::orderBy('created_at', 'desc')->get();
+    
     
         foreach ($books as $book) {
             // ISBN に基づいてキャッシュキーを生成
@@ -44,7 +49,7 @@ class BookController extends Controller
             $book->googleBookInfo = $bookInfo;
         }
 
-        return view('books.timeline', ['books' => $books]);
+        return view('timeline', ['books' => $books]);
     }
 
     /**
@@ -106,35 +111,40 @@ class BookController extends Controller
         }
     } 
     
-    
-    // book_register.blade.phpに書籍のisbn情報を渡す
     public function showByISBN($isbn)
     {
         // APIのURLを作成
         $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
-
-
+    
         // APIからのレスポンスを取得
-        $response = file_get_contents($url);
-        
+        $response = @file_get_contents($url); // エラーを抑制
+    
+        // レスポンスの確認
+        if ($response === false) {
+            // APIリクエストに失敗した場合
+            return redirect()->back()->withErrors(['msg' => '書籍情報の取得に失敗しました。']);
+        }
+    
         // レスポンスをデコード
         $bookData = json_decode($response);
-        
-        if (isset($bookData->items[0]->volumeInfo)) {
+    
+        // 書籍情報が存在するか確認
+        if (isset($bookData->items) && !empty($bookData->items)) {
             $volumeInfo = $bookData->items[0]->volumeInfo;
-            $title = $volumeInfo->title ?? '';
-            $authors = $volumeInfo->authors ?? '著者不明';
+            $title = $volumeInfo->title ?? 'タイトル不明';
+            $authors = $volumeInfo->authors ?? ['著者不明'];
             $thumbnail = $volumeInfo->imageLinks->thumbnail ?? 'no_image.png';
             $description = $volumeInfo->description ?? '概要がありません。';
             $publishedDate = $volumeInfo->publishedDate ?? '出版日がありません。';
         } else {
-            // エラーハンドリング
-            return view('book_search');
+            // 該当する書籍が見つからない場合
+            return redirect()->back()->withErrors(['msg' => '該当する書籍が見つかりませんでした。']);
         }
-
+    
         // ビューに書籍情報を渡す
-        return view('book_register',compact('isbn','title', 'authors', 'thumbnail', 'description', 'publishedDate'));
+        return view('book_register', compact('isbn', 'title', 'authors', 'thumbnail', 'description', 'publishedDate'));
     }
+
     
     /**
      * Store a newly created resource in storage.

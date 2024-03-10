@@ -119,19 +119,15 @@ Route::get('/mypage',function(){
     
     //削除 
     Route::delete('/book/{book}', [BookController::class,"destroy"])->name('book.delete');
+    
+    // タイムライン表示
+    Route::get('/timeline', [BookController::class,"index" ])->name('timeline');
 
 // 本棚機能
     // 本棚表示
     Route::get('/bookshelf', function () {
         return view('bookshelf');
     })->name('bookshelf');
-
-
-// タイムライン
-    // タイムライン表示
-    Route::get('/timeline', function () {
-        return view('timeline');
-    })->name('timeline');
 
 // そのほか
 Route::get('/dashboard', function () {
