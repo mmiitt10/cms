@@ -5,6 +5,7 @@ use App\Http\Controllers\UinfoController;
 use App\Http\Controllers\InterestController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\FollowController;
 
 // モデル
 use App\Models\User;
@@ -12,6 +13,7 @@ use App\Models\Uinfo;
 use App\Models\Interest;
 use App\Models\Career;
 use App\Models\Book;
+use App\Models\Follow;
 
 // ファサード
 use Illuminate\Support\Facades\Route;
@@ -131,6 +133,20 @@ Route::get('/register',function(){
 // 本棚機能
     // 本棚表示
     Route::get('/bookshelf', [BookController::class,"showBookshelf" ])->name('bookshelf');
+    
+//フォロー・フォロワー
+    // フォロー機能
+    Route::post('/follow/{user}', [FollowController::class, 'follow'])->name('follow');
+    
+    // 自分がフォローしている人を表示する機能
+    Route::get('/users/{user}/followings', [FollowController::class, 'followings'])->name('followings');
+    
+    // フォロー解除機能
+    Route::delete('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('unfollow');
+    
+    // 自分をフォローしている人を表示する機能
+    Route::get('/users/{user}/followers', [FollowController::class, 'followers'])->name('followers');
+
 
 // そのほか
 Route::get('/dashboard', function () {
