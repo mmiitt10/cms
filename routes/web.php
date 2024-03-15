@@ -6,6 +6,9 @@ use App\Http\Controllers\InterestController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\LikeController;
+
 
 // モデル
 use App\Models\User;
@@ -14,6 +17,8 @@ use App\Models\Interest;
 use App\Models\Career;
 use App\Models\Book;
 use App\Models\Follow;
+use App\Models\Reply;
+use App\Models\Like;
 
 // ファサード
 use Illuminate\Support\Facades\Route;
@@ -146,6 +151,15 @@ Route::get('/register',function(){
     
     // 自分をフォローしている人を表示する機能
     Route::get('/users/{user}/followers', [FollowController::class, 'followers'])->name('followers');
+    
+// 返信機能
+    // 返信を保存
+    Route::post('/books/{book}/replies', [ReplyController::class, 'store'])->name('replies.store');
+    
+// いいね機能
+    // いいね追加・削除
+    Route::post('/likes/toggle', [LikeController::class, 'toggle'])->name('likes.toggle');
+
 
 
 // そのほか

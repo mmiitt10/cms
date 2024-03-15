@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Book extends Model
+class Reply extends Model
 {
     use HasFactory;
     
-    // 書籍情報を有しているユーザーを取得
-    public function user()
+    // 返信は1つの投稿に紐づく
+    public function book()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Book::class);
     }
     
-    // 返信情報を複数保持可能
-    public function replies()
+    // 返信は1人のユーザーに紐づく
+    public function user()
     {
-        return $this->hasMany(Reply::class);
+        return $this->belongsTo(User::class);
     }
     
     // likeに対して紐づけ

@@ -57,6 +57,23 @@
                     <!--コメント-->
                     <div class="comment">コメント: {{ $book->comment }}</div>
                     
+                    <!--返信フォーム-->
+                    <form action="{{ route('replies.store', ['book' => $book->id]) }}" method="POST">
+                        @csrf
+                        <textarea name="comment" placeholder="返信を入力"></textarea>
+                        <button type="submit">返信</button>
+                    </form>
+                    @include('components.likes')
+                    
+                    <!-- この投稿に対する返信を表示 -->
+                    @foreach ($book->replies as $reply)
+                        <div class="reply">
+                            <!-- 返信表示コード -->
+                            <div>{{ $reply->user->uinfo->profile_name }}</div>
+                            <div>{{ $reply->comment }}</div>
+                            @include('components.likes')
+                        </div>
+                    @endforeach
                 </div>
             </div>
         @endforeach
