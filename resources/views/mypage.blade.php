@@ -62,6 +62,9 @@
                     </div>
                     <hr class="mt-4"> <!-- 区切り線を追加 -->
                 @endforeach
+                <div class="flex justify-center mt-4">
+                    <a href="{{ route('career.create') }}" class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">追加</a>
+                </div>
             </div>
         </div>
         

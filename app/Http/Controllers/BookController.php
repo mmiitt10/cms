@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CareerSummary;
+use App\Events\CareerUpdated;
 
 // キャッシュを使用してAPIの負荷を減らす
 use Illuminate\Support\Facades\Cache;
@@ -249,8 +251,19 @@ class BookController extends Controller
             // 取得した情報を書籍オブジェクトに追加
             $book->googleBookInfo = $bookInfo;
         }
-
-        return view('mypage_watch', ['user'=>$user,'books' => $books]);
+        
+        // 特定のユーザーIDに基づく情報を取得
+        $industrySummaries = CareerSummary::where('user_id', $id)
+                                ->where('type', 'industry')
+                                ->get();
+    
+        $functionSummaries = CareerSummary::where('user_id', $id)
+                                ->where('type', 'function')
+                                ->get();
+    
+        // ビューにデータを渡す
+        return view('mypage_watch', compact('user', 'books', 'industrySummaries', 'functionSummaries'));
+        
     }
 
     /**

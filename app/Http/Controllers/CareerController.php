@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\CareerSummary;
+use App\Events\CareerUpdated;
 
 class CareerController extends Controller
 {
@@ -60,13 +61,14 @@ class CareerController extends Controller
     
         // '新しい職歴を追加'ボタンが押された場合、新しいフォームを表示
         if ($request->input('submit') == 'save_and_new') {
+            event(new CareerUpdated($career));
             return redirect()->route('career.create'); // 新しいフォーム画面へリダイレクト
         }
     
         // 通常の'登録'ボタンが押された場合、例えばマイページへリダイレクト
+        event(new CareerUpdated($career));
         return redirect('mypage')->with('success', 'キャリア情報が登録されました');
     }
-
 
     /**
      * Display the specified resource.
@@ -114,6 +116,9 @@ class CareerController extends Controller
         $career->career_function = $request->career_function;
         $career->career_position = $request->career_position;
         $career->save();
+        
+        event(new CareerUpdated($career));
+        
         return redirect('mypage')->with('success', '登録情報が更新されました');
     }
 
@@ -123,6 +128,7 @@ class CareerController extends Controller
     public function destroy(Career $career)
     {
         $career->delete();       //追加
+        event(new CareerUpdated($career));
         return redirect('mypage');  //追加
     }
     
@@ -146,4 +152,23 @@ class CareerController extends Controller
         // ビューにデータを渡す
         return view('mypage', compact('industrySummaries', 'functionSummaries'));
     }
+    
+    /**
+     * 特定のユーザーのキャリアサマリーを表示
+     */
+    public function showUserCareerSummary($userId)
+    {
+        // 特定のユーザーIDに基づく情報を取得
+        $industrySummaries = CareerSummary::where('user_id', $userId)
+                                ->where('type', 'industry')
+                                ->get();
+    
+        $functionSummaries = CareerSummary::where('user_id', $userId)
+                                ->where('type', 'function')
+                                ->get();
+    
+        // ビューにデータを渡す
+        return view('user.mypage', compact('industrySummaries', 'functionSummaries'));
+    }
+
 }
