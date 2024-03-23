@@ -6,6 +6,7 @@ use App\Models\Career;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CareerSummary;
 
 class CareerController extends Controller
 {
@@ -123,5 +124,26 @@ class CareerController extends Controller
     {
         $career->delete();       //追加
         return redirect('mypage');  //追加
+    }
+    
+    /**
+     * ログインユーザーのキャリアサマリーを表示
+     */
+    public function showCareerSummary()
+    {
+        $user_id = Auth::id(); // ログイン中のユーザーIDを取得
+
+        // 業種ごとの経験年数を取得
+        $industrySummaries = CareerSummary::where('user_id', $user_id)
+                            ->where('type', 'industry')
+                            ->get();
+
+        // 職種ごとの経験年数を取得
+        $functionSummaries = CareerSummary::where('user_id', $user_id)
+                            ->where('type', 'function')
+                            ->get();
+
+        // ビューにデータを渡す
+        return view('mypage', compact('industrySummaries', 'functionSummaries'));
     }
 }

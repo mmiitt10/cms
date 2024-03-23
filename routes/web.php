@@ -19,6 +19,7 @@ use App\Models\Book;
 use App\Models\Follow;
 use App\Models\Reply;
 use App\Models\Like;
+use App\Models\CareerSummary;
 
 // ファサード
 use Illuminate\Support\Facades\Route;
@@ -52,9 +53,8 @@ Route::get('/register',function(){
 
 // マイページ
     // 自分のマイページ
-    Route::get('/mypage',function(){
-        return view('mypage');
-    }) ->name('mypage');
+    Route::get('mypage', [CareerController::class,'showCareerSummary'])->name('mypage');
+    
     
     // 他人のマイページ
     Route::get('/user/{id}/mypage', [BookController::class,'showUserBookshelf'])->name('user.page');

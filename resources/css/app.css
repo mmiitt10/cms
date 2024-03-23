@@ -21,6 +21,7 @@ body {
         width: 100%;
         display: flex;
         align-items: center;
+        margin-bottom: 0;
     }
     
     .logo img {
@@ -28,7 +29,9 @@ body {
         width: auto; /* 幅を自動調整 */
     }
     
-
+main{
+    margin-top: 0;
+}
 
     
 /*footer*/
