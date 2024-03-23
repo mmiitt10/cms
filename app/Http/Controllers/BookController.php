@@ -67,52 +67,99 @@ class BookController extends Controller
     // 書籍情報を検索
     public function searchBooks(Request $request)
     {
-        
         $search_error = '';
         $total_items = 0;
-        
-        // 検索クエリを取得
-        $search_query = $request->input('search');
+        $books = [];
     
-        // 検索クエリが空の場合はエラーメッセージを設定
+        // パラメータ
+        $search_query = $request->input('search');
+        $startIndex = $request->input('start', 0); // デフォルトは0から開始
+        $maxResults = 10; // 1ページあたりのアイテム数
+    
         if (empty($search_query)) {
-            $search_error = '検索クエリを入力してください。';
-            return view('book_search');
+            return view('book_search', ['search_error' => '検索クエリを入力してください。']);
         }
     
-        // Google Books APIのURL
-        // $url = "https://www.googleapis.com/books/v1/volumes?q=" . urlencode($search_query) ;
-        // . "&langRestrict=ja";
-        $url = "https://www.googleapis.com/books/v1/volumes?q=" . urlencode($search_query);
-
-
+        // Google Books APIのURLを構築
+        $url = "https://www.googleapis.com/books/v1/volumes?q=" . urlencode($search_query)
+             . "&startIndex=" . $startIndex
+             . "&maxResults=" . $maxResults;
+    
         // APIからのレスポンスを取得
-        $response = file_get_contents($url);
-        
+        $response = @file_get_contents($url);
+    
         // レスポンスをデコード
-        $data = json_decode($response);
-        
-        if ($data && isset($data->items)) {
+        if ($response) {
+            $data = json_decode($response);
+    
+            if (isset($data->items)) {
                 $books = $data->items;
                 
-                // 出版日が新しい順番にソート
+                // 出版日が新しい順にソート
                 usort($books, function ($a, $b) {
-                    // publishedDate プロパティが存在するかチェック
-                    if (isset($a->volumeInfo->publishedDate) && isset($b->volumeInfo->publishedDate)) {
-                        return strtotime($b->volumeInfo->publishedDate) - strtotime($a->volumeInfo->publishedDate);
-                    } else {
-                        // publishedDate プロパティが存在しない場合は同じ値を返す
-                        return 0;
-                    }
+                    $dateA = $a->volumeInfo->publishedDate ?? '0000';
+                    $dateB = $b->volumeInfo->publishedDate ?? '0000';
+                    return strcmp($dateB, $dateA); // 降順にする
                 });
-                
+    
                 $total_items = $data->totalItems;
-                
-                return view('book_search_result', compact('books','total_items'));
             } else {
                 $search_error = '検索結果が見つかりませんでした。';
+            }
+        } else {
+            $search_error = 'APIリクエストに失敗しました。';
         }
-    } 
+    
+        return view('book_search_result', compact('books', 'total_items', 'search_error', 'search_query', 'startIndex', 'maxResults'));
+    }
+
+    
+    // public function searchBooks(Request $request)
+    // {
+        
+    //     // 初期化
+    //     $search_error = '';
+    //     $total_items = 0;
+    //     $books = [];
+        
+    //     // パラメータ
+    //     $search_query = $request->input('search');
+    //     $startIndex = $request->input('start', 0); // デフォルトは0から開始
+    //     $maxResults = 20; // 1ページあたりのアイテム数
+    
+    //     // 検索クエリが空の場合はエラーメッセージを設定
+    //     if (empty($search_query)) {
+    //         $search_error = '検索クエリを入力してください。';
+    //         return view('book_search');
+    //     }
+    
+    //     // Google Books APIのURLを構築
+    //     $url = "https://www.googleapis.com/books/v1/volumes?q=" . urlencode($search_query)
+    //          . "&startIndex=" . $startIndex
+    //          . "&maxResults=" . $maxResults;
+
+    //     // APIからのレスポンスを取得
+    //     $response = file_get_contents($url);
+        
+    //     // レスポンスをデコード
+    //     $data = json_decode($response);
+        
+    //     // レスポンスをデコード
+    //     if ($response) {
+    //             $data = json_decode($response);
+        
+    //             if (isset($data->items)) {
+    //                 $books = $data->items;
+    //                 $total_items = $data->totalItems;
+    //             } else {
+    //                 $search_error = '検索結果が見つかりませんでした。';
+    //             }
+    //         } else {
+    //             $search_error = 'APIリクエストに失敗しました。';
+    //         }
+        
+    //     return view('book_search_result', compact('books', 'total_items', 'search_error', 'search_query', 'startIndex', 'maxResults'));
+    // }
     
     public function showByISBN($isbn)
     {
