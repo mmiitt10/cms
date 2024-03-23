@@ -7,8 +7,10 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet" />
-        <!-- Bootstrap CSS のリンク例（Bootstrap 4 の場合）-->
-        <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+        
+        <!-- Viteで管理されるアセットへのリンクに変更 -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

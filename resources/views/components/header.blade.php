@@ -8,13 +8,12 @@
                 </a>
             </div>
     
-            <nav>
+            <nav class="header-contents">
                 <ul>
                     <!-- ログインしていない場合の表示項目 -->
                     @guest
                         <li><a href="{{route('timeline')}}">タイムライン</a></li>
                         <li><a href="{{route('book.search')}}">探す</a></li>
-                        <li><a href="">登録する</a></li>
                         <li><a href="{{route('bookshelf')}}">本棚</a></li>
                         <li><a href="{{route('login')}}">ログイン</a></li>
                         <li><a href="{{route('register')}}">会員登録</a></li>
@@ -22,7 +21,6 @@
                     @else
                         <li><a href="{{route('timeline')}}">タイムライン</a></li>
                         <li><a href="{{route('book.search')}}">探す</a></li>
-                        <li><a href="register">登録する</a></li>
                         <li><a href="{{route('bookshelf')}}">本棚</a></li>
                         <!--ログアウト機能-->
                         <li>

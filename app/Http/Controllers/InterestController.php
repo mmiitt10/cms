@@ -33,11 +33,11 @@ class InterestController extends Controller
         // バリデーションルールの定義
         $validator=Validator::make($request->all(),[
             'interest_industry1' => 'required|string|max:255',
-            'interest_industry2' => 'required|string|max:255',
-            'interest_industry3' => 'required|string|max:255',
+            'interest_industry2' => 'nullable|string|max:255',
+            'interest_industry3' => 'nullable|string|max:255',
             'interest_function1' => 'required|string|max:255',
-            'interest_function2' => 'required|string|max:255',
-            'interest_function3' => 'required|string|max:255',
+            'interest_function2' => 'nullable|string|max:255',
+            'interest_function3' => 'nullable|string|max:255',
         ]);
         
         // バリデーションエラーを設定
@@ -84,11 +84,11 @@ class InterestController extends Controller
         // バリデーションルールの定義
         $validator=Validator::make($request->all(),[
             'interest_industry1' => 'required|string|max:255',
-            'interest_industry2' => 'required|string|max:255',
-            'interest_industry3' => 'required|string|max:255',
+            'interest_industry2' => 'nullable|string|max:255',
+            'interest_industry3' => 'nullable|string|max:255',
             'interest_function1' => 'required|string|max:255',
-            'interest_function2' => 'required|string|max:255',
-            'interest_function3' => 'required|string|max:255',
+            'interest_function2' => 'nullable|string|max:255',
+            'interest_function3' => 'nullable|string|max:255',
         ]);
         
         // バリデーションエラーを設定
