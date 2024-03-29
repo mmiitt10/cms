@@ -37,9 +37,13 @@ use Illuminate\Http\Request;
 */
 
 // トップ画面
-Route::get('/', function () {
-    return view('top');
-});
+// Route::get('/', function () {
+//     return view('top');
+// });
+
+Route::get('/', [UinfoController::class, 'showQualifiedUsers'])
+->name('top');
+
 
 // ログイン
 Route::get('/login',function(){

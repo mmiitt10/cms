@@ -20,22 +20,3 @@ class UpdateCareerSummaries
         Artisan::call('update:career-summaries');
     }
 }
-
-// class UpdateCareerSummaries
-// {
-//     /**
-//      * Create the event listener.
-//      */
-//     public function __construct()
-//     {
-//         //
-//     }
-
-//     /**
-//      * Handle the event.
-//      */
-//     public function handle(CareerUpdated $event): void
-//     {
-//         //
-//     }
-// }

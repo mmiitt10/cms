@@ -11,6 +11,11 @@
         <!-- Viteで管理されるアセットへのリンクに変更 -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
+        <!--イチサンフォーム-->
+        <script src="https://ichisan.jp/form/lib/ichisanForm.min.js"></script>
+        <link rel="stylesheet" href="https://ichisan.jp/form/lib/ichisanForm.min.css"/>
+
+        
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

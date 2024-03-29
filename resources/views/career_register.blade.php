@@ -9,7 +9,7 @@
             <!-- フォームアイテムの繰り返し部分をBladeコンポーネントとTailwind CSSでスタイリッシュに -->
             <div class="mb-4">
                 <x-input-label for="career_company" :value="__('会社名')" />
-                <x-text-input id="career_company" class="block mt-1 w-full" type="string" name="career_company" required autofocus />
+                <x-text-input id="career_company" class="company_name block mt-1 w-full" type="string" name="career_company" required autofocus />
                 <x-input-error :messages="$errors->get('career_company')" class="mt-2" />
             </div>
             

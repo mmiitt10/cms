@@ -19,6 +19,9 @@ class UpdateCareerSummaries extends Command
         $users = User::all();
     
         foreach ($users as $user) {
+            // 既存の集計データを削除
+            CareerSummary::where('user_id', $user->id)->delete();
+            
             // 業種ごとの集計
             $industries = Career::where('user_id', $user->id)
                                 ->select('career_industry', DB::raw("SUM(TIMESTAMPDIFF(MONTH, career_work_from, COALESCE(career_work_to, CURDATE()))) as total_months"))

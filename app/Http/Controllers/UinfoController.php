@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Follow;
 use App\Models\Uinfo;
+use App\Models\CareerSummary;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -146,4 +148,61 @@ class UinfoController extends Controller
     {
         //
     }
+    
+    // 業種・職種の先輩を出力する
+    
+    // public function showQualifiedUsers()
+    // {
+    //     $loggedInUserId = Auth::id();
+    //     $loggedInUserIndustry = CareerSummary::where('user_id', $loggedInUserId)
+    //                                           ->where('type', 'industry')
+    //                                           ->first();
+    
+    //     if (!$loggedInUserIndustry) {
+    //         return view('top');
+    //     }
+    
+    //     $qualifiedUserIds = CareerSummary::where('type', 'industry')
+    //                                       ->where('name', $loggedInUserIndustry->name)
+    //                                       ->where('total_years', '>', $loggedInUserIndustry->total_years + 5)
+    //                                       ->pluck('user_id');
+    
+    //     $qualifiedUsers = Uinfo::whereIn('user_id', $qualifiedUserIds)->get();
+    
+    //     return view('top', compact('qualifiedUsers'));
+    // }
+    
+    public function showQualifiedUsers()
+    {
+        $loggedInUserId = Auth::id();
+        $loggedInUserIndustry = CareerSummary::where('user_id', $loggedInUserId)
+                                              ->where('type', 'industry')
+                                              ->first();
+        $loggedInUserFunction = CareerSummary::where('user_id', $loggedInUserId)
+                                              ->where('type', 'function')
+                                              ->first();
+    
+        $qualifiedUserIdsForIndustry = collect([]);
+        if ($loggedInUserIndustry) {
+            $qualifiedUserIdsForIndustry = CareerSummary::where('type', 'industry')
+                ->where('name', $loggedInUserIndustry->name)
+                ->where('total_years', '>', $loggedInUserIndustry->total_years + 5)
+                ->pluck('user_id');
+        }
+    
+        $qualifiedUserIdsForFunction = collect([]);
+        if ($loggedInUserFunction) {
+            $qualifiedUserIdsForFunction = CareerSummary::where('type', 'function')
+                ->where('name', $loggedInUserFunction->name)
+                ->where('total_years', '>', $loggedInUserFunction->total_years + 5)
+                ->pluck('user_id');
+        }
+    
+        $qualifiedUsersForIndustry = Uinfo::whereIn('user_id', $qualifiedUserIdsForIndustry)->get();
+        $qualifiedUsersForFunction = Uinfo::whereIn('user_id', $qualifiedUserIdsForFunction)->get();
+    
+        return view('top', compact('qualifiedUsersForIndustry', 'qualifiedUsersForFunction'));
+    }
+
+
 }
